@@ -1,7 +1,11 @@
-import express, { response } from "express";
-import cors from "cors";
-import "dotenv/config";
-import pool from "./utils/pgConfig.mjs";
+import express from "express"
+import cors from 'cors'
+import 'dotenv/config';
+import pool from './utils/pgConfig.mjs'
+import connectPgSimple from 'connect-pg-simple';
+import session from "express-session";
+import passport from "passport";
+import routes from './routes/routes.mjs'
 
 const app = express();
 
@@ -13,8 +17,32 @@ app.use(
     credentials: true,
   })
 );
+const PgSession = connectPgSimple(session);
 
-const PORT = process.env.PORT || 3001;
+app.use(
+    session({
+        secret: "7865d21da14277342855a8443d3b76ef",
+        saveUninitialized: false,
+        resave: false,
+        cookie: {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            maxAge: 60000 * 30,
+        },
+        store: new PgSession({
+            pool: pool,
+            tableName: 'user_sessions',
+        })
+    })
+);
+
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(routes);
+const PORT = process.env.PORT || 3001
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
@@ -24,12 +52,5 @@ app.get("/", (request, response) => {
   return response.send({ msg: "Hello" });
 });
 
-app.get("/api/admin/CourseManagement", async (request, response) => {
-  try {
-    const result = await pool.query("SELECT * FROM courses");
-    return response.json(result.rows);
-  } catch (error) {
-    console.error("DB ERROR:", error.message);
-    return response.status(500).send("Database Error");
-  }
-});
+
+
