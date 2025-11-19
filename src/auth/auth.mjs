@@ -95,9 +95,10 @@ router.post("/api/auth/resetPassword", async (request, response, next) => {
       .createHash("sha256")
       .update(token)
       .digest("hex");
-  
+
     const result = await pool.query("SELECT * FROM get_mail_expire($1)", [hash256Token]);
 
+    // When token does not exist in DTB due to thge usage before
     if (result.rowCount === 0) {
       return response.status(400).json({ message: "Invalid token" });
     }
