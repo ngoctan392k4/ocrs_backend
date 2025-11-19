@@ -11,11 +11,12 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-app.use(cors({
+app.use(
+  cors({
     origin: "http://localhost:5173",
-    credentials: true
-}))
-
+    credentials: true,
+  })
+);
 const PgSession = connectPgSimple(session);
 
 app.use(
@@ -41,9 +42,15 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(routes);
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3001
 
 app.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`)
-})
+  console.log(`Server is running on ${PORT}`);
+});
+
+app.get("/", (request, response) => {
+  return response.send({ msg: "Hello" });
+});
+
+
 
