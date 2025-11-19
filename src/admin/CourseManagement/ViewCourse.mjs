@@ -1,6 +1,7 @@
 import { Router } from "express";
 import pool from "../../utils/pgConfig.mjs";
 
+
 const router = Router();
 
 router.get("/api/admin/CourseManagement", async (request, response) => {
