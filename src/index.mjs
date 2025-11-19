@@ -1,5 +1,7 @@
 import express from "express"
 import cors from 'cors'
+import "dotenv/config";
+import pool from "./utils/pgConfig.mjs";
 
 const app = express();
 
@@ -18,4 +20,14 @@ app.listen(PORT, () => {
 
 app.get("/", (request, response) => {
     return response.send({msg: "Hello"})
+})
+
+app.get("/api/admin/ClassManagement", async (request, response) => {
+  try {
+    const result = await pool.query("SELECT * FROM classes");
+    return response.json(result.rows);
+  } catch (error) {
+    console.error("DB ERROR:", error.message);
+    return response.status(500).send("Database Error");
+  }
 })
