@@ -9,7 +9,7 @@ router.delete("/api/admin/CourseManagement/:courseid", async (req, res) => {
 
     try {
         const result = await pool.query(
-            "DELETE FROM courses WHERE courseid = $1",
+            "CALL delete_course($1)",
             [courseid]
         );
 
