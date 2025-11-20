@@ -9,11 +9,31 @@ router.post("/api/addAccount", async (request, response, next) => {
     const { selectedRole, name, phone, mail, dob, department, major } =
       request.body;
 
+    // Email exists
+    const check_email = await pool.query(
+      "SELECT check_exist_email ($1) AS exists",
+      [mail]
+    );
+    const matchEmail = check_email.rows[0].exists;
+
+    if (matchEmail)
+      return response.status(400).json({ message: "Email exists" });
+
     // Standardize role
     const role = selectedRole.toLowerCase().trim();
 
-    // Initialize username
-    const username = mail.split("@")[0];
+    // Initialize username and check username exists
+    let username = mail.split("@")[0];
+    const countUser = await pool.query(
+      "SELECT count_exist_user ($1) AS count_user",
+      [username]
+    );
+    const currentCount = countUser.rows[0].count_user|| 0;
+    if(currentCount !== 0){
+      const newCountUser = parseInt(currentCount) + 1;
+      username = username + newCountUser;
+    }
+
 
     // Initialize default password
     const defaultPassword = await hashPassword(username);
