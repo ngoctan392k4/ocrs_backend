@@ -7,44 +7,116 @@ import {
   checkSchema,
 } from "express-validator";
 import passport from "passport";
-import './local-stategies.mjs'
+import crypto from "crypto";
+import "./local-stategies.mjs";
+import pool from "../utils/pgConfig.mjs";
+import { genToken } from "../utils/genToken.mjs";
+import { hashPassword } from "../utils/hashFunc.mjs";
+import { sendResetPasswordEmail } from '../utils/sendResetPwd.mjs'
+import { log } from "console";
 
 const router = Router();
 
 router.post("/api/auth", (request, response, next) => {
-    passport.authenticate('local', (error, user, info) => {
+  passport.authenticate("local", (error, user, info) => {
+    // Process sever connection error
+    if (error) {
+      return next(error);
+    }
 
-        // Process sever connection error
-        if(error) {
-            return next(error)
-        }
+    if (!user) {
+      return response.status(401).json(info);
+    }
 
-        if(!user){
-            return response.status(401).json(info)
-        }
+    request.logIn(user, async (error) => {
+      if (error) {
+        return next(error);
+      }
 
-        request.logIn(user, async (error) => {
-            if(error) {
-                return next(error)
-            }
+      const userInfo = {
+        id: user.accountid,
+        username: user.username,
+        role: user.role,
+      };
 
-            const userInfo = {
-                id: user.accountid,
-                username: user.username,
-                role: user.role
-            }
-
-            return response.status(200).json(userInfo)
-        })
-    })(request, response, next);
+      return response.status(200).json(userInfo);
+    });
+  })(request, response, next);
 });
 
 router.get("/api/check-session", (request, response) => {
-    if(request.user){
-        return response.json({loggedIn: true, user: request.user})
+  if (request.user) {
+    return response.json({ loggedIn: true, user: request.user });
+  }
+
+  response.json({ loggedIn: false });
+});
+
+router.post("/api/auth/forgotPassword", async (request, response) => {
+  // Get email
+  const { email } = request.body;
+  const result = await pool.query("SELECT check_exist_email ($1) AS exists", [
+    email,
+  ]);
+
+  const matchEmail = result.rows[0].exists;
+
+  if (!matchEmail)
+    return response.status(404).json({ message: "Not Found Email" });
+
+  // Gen Token to reset pwd
+  const { resetToken, passwordResetToken, passwordResetTokenExpire } = genToken();
+  await pool.query("CALL save_reset_pwd_token($1, $2, $3)", [
+    email,
+    passwordResetToken,
+    passwordResetTokenExpire,
+  ]);
+
+  await sendResetPasswordEmail(email, resetToken);
+
+  return response.status(200).json({
+    message: "Reset token generated"
+  });
+});
+
+router.post("/api/auth/resetPassword", async (request, response, next) => {
+  try {
+    const { token, pwd } = request.body;
+
+    if (!token) {
+      return response.status(400).json({ message: "Invalid URL" });
     }
 
-    response.json({loggedIn: false});
+    if (!pwd) {
+      return response.status(400).json({ message: "Null pwd" });
+    }
+
+    const hash256Token = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const result = await pool.query("SELECT * FROM get_mail_expire($1)", [hash256Token]);
+
+    // When token does not exist in DTB due to thge usage before
+    if (result.rowCount === 0) {
+      return response.status(400).json({ message: "Invalid token" });
+    }
+
+    const { email, expire } = result.rows[0];
+    if (Date.now() > expire || !expire) {
+      return response.status(400).json({ message: "Token expired" });
+    }
+
+    const hashedNewPwd = await hashPassword(pwd);
+
+    await pool.query("CALL save_new_pwd($1, $2)", [hashedNewPwd, email]);
+    await pool.query("CALL update_status_token($1)", [hash256Token]);
+
+    return response.status(200).json({ message: "OK" });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;
