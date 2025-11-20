@@ -1,7 +1,6 @@
 import { Router } from "express";
 import authRouter from '../auth/auth.mjs';
 import classRoute from '../admin/ClassManagement/ViewClass.mjs';
-import viewCourseRouter from '../admin/CourseManagement/ViewCourse.mjs'
 
 const router = Router();
 
