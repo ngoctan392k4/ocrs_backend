@@ -39,7 +39,7 @@ export default passport.use(
                 return done(null, false, { message: 'Username Not Found' });
             }
 
-            const matchPassword = comparePassword(password, user.password);
+            const matchPassword = await comparePassword(password, user.password);
 
             if(!matchPassword){
                 return done(null, false, { message: 'Incorrect Password' });
