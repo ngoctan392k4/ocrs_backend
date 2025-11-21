@@ -18,19 +18,17 @@ router.delete("/api/admin/ClassManagement/:clsid", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "DELETE FROM classes WHERE clsid = $1",
+      "SELECT delete_class($1)",  
       [clsid]
     );
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: "Class not found" });
-    }
-
     return res.json({ message: "Class deleted successfully" });
+
   } catch (error) {
     console.error("DELETE ERROR:", error.message);
     return res.status(500).send("Database Error");
   }
 });
+
 
 export default router;
