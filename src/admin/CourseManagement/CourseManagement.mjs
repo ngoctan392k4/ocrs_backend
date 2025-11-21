@@ -3,6 +3,8 @@ import pool from "../../utils/pgConfig.mjs";
 
 const router = Router();
 
+// ViewCourse
+
 router.get("/api/admin/CourseManagement", async (request, response) => {
   try {
     const result = await pool.query("SELECT * FROM get_course()");
@@ -12,6 +14,8 @@ router.get("/api/admin/CourseManagement", async (request, response) => {
     return response.status(500).send("Database Error");
   }
 });
+
+// AddCourse
 
 router.post("/api/admin/CourseManagement", async (request, response) => {
   const { courseID, courseCode, courseName, tosu, pre, para, des, credits } = request.body;
@@ -80,6 +84,28 @@ router.post("/api/admin/CourseManagement", async (request, response) => {
       message: "Database Error",
     });
   }
+});
+
+// DelCourse
+
+router.delete("/api/admin/CourseManagement/:courseid", async (req, res) => {
+    const { courseid } = req.params;
+
+    try {
+        const result = await pool.query(
+            "CALL delete_course($1)",
+            [courseid]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        return res.json({ message: "Course deleted successfully" });
+    } catch (error) {
+        console.error("DELETE ERROR:", error.message);
+        return res.status(500).send("Database Error");
+    }
 });
 
 export default router;
