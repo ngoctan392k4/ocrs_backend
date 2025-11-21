@@ -42,7 +42,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(routes);
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT 
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
