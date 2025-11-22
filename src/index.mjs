@@ -42,6 +42,21 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(routes);
+
+//Global error handler
+app.use((err, req, res, next) => {
+  
+  //Logs the error for backend debug
+  console.error("GLOBAL ERROR HANDLER: ", err.stack);
+
+  //Check if the error has a status code
+  const statusCode = err.status || 500;
+
+  //Send an error response to the client
+  res.status(statusCode).json({
+    message: err.message || "An unexpected server error occured."
+  });
+});
 const PORT = process.env.PORT || 3001
 
 app.listen(PORT, () => {
