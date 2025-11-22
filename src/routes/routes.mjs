@@ -8,5 +8,6 @@ const router = Router();
 router.use(authRouter);
 router.use(CourseManagementRouter);
 router.use(addAccountRouter);
+router.use(DeleteAccountRouter);
 
 export default router
