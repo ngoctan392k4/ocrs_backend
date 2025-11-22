@@ -18,7 +18,8 @@ router.get("/api/admin/CourseManagement", async (request, response) => {
 // AddCourse
 
 router.post("/api/admin/CourseManagement", async (request, response) => {
-  const { courseID, courseCode, courseName, tosu, pre, para, des, credits } = request.body;
+  const { courseID, courseCode, courseName, tosu, pre, para, des, credits } =
+    request.body;
 
   try {
     if (!courseID || !courseName) {
@@ -35,8 +36,9 @@ router.post("/api/admin/CourseManagement", async (request, response) => {
         message: "At least one credit must be greater than 0",
       });
     }
-        const { rows: existsRows } = await pool.query(
-      `SELECT checkID_existed($1) AS exists`, [courseID]
+    const { rows: existsRows } = await pool.query(
+      `SELECT checkID_existed($1) AS exists`,
+      [courseID]
     );
 
     if (existsRows[0].exists) {
@@ -76,7 +78,6 @@ router.post("/api/admin/CourseManagement", async (request, response) => {
       success: true,
       message: "Course added successfully",
     });
-
   } catch (error) {
     console.error("DB Error:", error.message);
     return response.status(500).json({
@@ -89,23 +90,118 @@ router.post("/api/admin/CourseManagement", async (request, response) => {
 // DelCourse
 
 router.delete("/api/admin/CourseManagement/:courseid", async (req, res) => {
-    const { courseid } = req.params;
+  const { courseid } = req.params;
+
+  try {
+    const result = await pool.query("CALL delete_course($1)", [courseid]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    return res.json({ message: "Course deleted successfully" });
+  } catch (error) {
+    console.error("DELETE ERROR:", error.message);
+    return res.status(500).send("Database Error");
+  }
+});
+
+// Edit Course
+
+router.get(
+  "/api/admin/CourseManagement/:courseid",
+  async (request, response) => {
+    const { courseid } = request.params;
 
     try {
-        const result = await pool.query(
-            "CALL delete_course($1)",
-            [courseid]
-        );
+      const result = await pool.query("SELECT * FROM get_course_by_id($1)", [
+        courseid,
+      ]);
 
-        if (result.rowCount === 0) {
-            return res.status(404).json({ message: "Course not found" });
-        }
+      if (result.rows.length === 0) {
+        return response.status(404).json({ message: "Course not found" });
+      }
+      const row = result.rows[0];
 
-        return res.json({ message: "Course deleted successfully" });
+      return response.json({
+        ...row,
+        credits: {
+          LEC: row.lec,
+          LAB: row.lab,
+          Review: row.review,
+          Project: row.project,
+          Internship: row.internship,
+          Studio: row.studio,
+          FieldTrip: row.fieldtrip,
+          CLC: row.clc,
+          DEM: row.dem,
+          Discussion: row.discussion,
+          LanguageDialogue: row.languagedialogue,
+          Workshop: row.workshop,
+        },
+      });
     } catch (error) {
-        console.error("DELETE ERROR:", error.message);
-        return res.status(500).send("Database Error");
+      console.error("DB ERROR:", error.message);
+      return response.status(500).json({ message: "Database Error" });
     }
-});
+  }
+);
+
+router.put(
+  "/api/admin/CourseManagement/:courseid",
+  async (request, response) => {
+    const { courseid } = request.params;
+
+    const { courseName, courseCode, pre, para, des, credits, tosu } =
+      request.body;
+
+    try {
+      const {
+        LEC,
+        LAB,
+        Review,
+        Project,
+        Internship,
+        Studio,
+        FieldTrip,
+        CLC,
+        DEM,
+        Discussion,
+        LanguageDialogue,
+        Workshop,
+      } = credits || {};
+
+      const result = await pool.query(
+        "CALL update_course($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)",
+        [
+          courseCode,
+          courseid,
+          courseName,
+          tosu,
+          pre,
+          para,
+          des,
+          LEC,
+          LAB,
+          Review,
+          Project,
+          Internship,
+          Studio,
+          FieldTrip,
+          CLC,
+          DEM,
+          Discussion,
+          LanguageDialogue,
+          Workshop,
+        ]
+      );
+
+      return response.json({ message: "Course updated successfully" });
+    } catch (error) {
+      console.error("UPDATE ERROR:", error.message);
+      return response.status(500).json({ message: "Database Error" });
+    }
+  }
+);
 
 export default router;
