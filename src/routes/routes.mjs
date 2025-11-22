@@ -6,7 +6,6 @@ import viewCourseRouter from '../admin/CourseManagement/ViewCourse.mjs'
 
 import viewAccountRouter from '../admin/AccountManagement/viewAccountList.mjs'
 import addAccountRouter from '../admin/AccountManagement/AddAccount.mjs'
-import editAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
 import DeleteAccountRouter from '../admin/AccountManagement/DeleteAccount.mjs'
 
 const router = Router();
@@ -18,7 +17,6 @@ router.use(courseDeleteRoute);
 
 router.use(viewAccountRouter);
 router.use(addAccountRouter);
-router.use(editAccountRouter);
 router.use(DeleteAccountRouter);
 
 
