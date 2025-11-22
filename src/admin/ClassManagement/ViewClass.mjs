@@ -1,34 +1,45 @@
 import { Router } from "express";
 import pool from "../../utils/pgConfig.mjs";
 
-
 const router = Router();
-router.get("/api/admin/ClassManagement", async (request, response) => {
+
+router.get("/api/admin/ClassManagement", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM getClassesWithSchedule()");
-    return response.json(result.rows);
+    const classesResult = await pool.query("SELECT * FROM getClassesWithSchedule()");
+
+    return res.json({
+      classes: classesResult.rows, 
+    });
+
   } catch (error) {
     console.error("DB ERROR:", error.message);
-    return response.status(500).send("Database Error");
+    return res.status(500).json({ error: "Database Error" });
   }
-})
+});
 
+router.post("/api/admin/semester/next", async (req, res) => {
+  try {
+    await pool.query("CALL create_next_semester()");
+    return res.json({ message: "Semester incremented" });
+  } catch (err) {
+    console.error("SEMESTER ERROR:", err.message);
+    return res.status(500).json({ error: "Database Error" });
+  }
+});
+
+// Xóa class
 router.delete("/api/admin/ClassManagement/:clsid", async (req, res) => {
   const { clsid } = req.params;
 
   try {
-    const result = await pool.query(
-      "SELECT delete_class($1)",  
-      [clsid]
-    );
+    // CALL procedure
+    await pool.query("CALL delete_class($1)", [clsid]);
 
-    return res.json({ message: "Class deleted successfully" });
-
-  } catch (error) {
-    console.error("DELETE ERROR:", error.message);
-    return res.status(500).send("Database Error");
+    return res.json({ message: `Class ${clsid} deleted successfully.` });
+  } catch (err) {
+    console.error("DELETE CLASS ERROR:", err.message);
+    return res.status(500).json({ error: "Database Error" });
   }
 });
-
 
 export default router;
