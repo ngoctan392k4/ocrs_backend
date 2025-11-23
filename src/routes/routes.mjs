@@ -5,8 +5,7 @@ import addclassRoute from '../admin/ClassManagement/AddClass.mjs'
 import courseDeleteRoute from '../admin/CourseManagement/DeleteCourse.mjs';
 import viewCourseRouter from '../admin/CourseManagement/ViewCourse.mjs'
 import viewAccountRouter from '../admin/AccountManagement/viewAccountList.mjs'
-import editClassRouter from '../admin/ClassManagement/AddClass.mjs'
-import courseDeleteRoute from '../admin/CourseManagement/DeleteCourse.mjs';
+import editClassRouter from '../admin/ClassManagement/EditClass.mjs'
 import addAccountRouter from '../admin/AccountManagement/AddAccount.mjs'
 import DeleteAccountRouter from '../admin/AccountManagement/DeleteAccount.mjs'
 
@@ -21,5 +20,6 @@ router.use(viewAccountRouter);
 router.use(addAccountRouter);
 router.use(editClassRouter);
 router.use(DeleteAccountRouter);
+
 
 export default router
