@@ -152,10 +152,23 @@ router.put(
   async (request, response) => {
     const { courseid } = request.params;
 
-    const { courseName, courseCode, pre, para, des, credits, tosu } =
+    const { courseCode, courseName, tosu, pre, para, des, credits } =
       request.body;
 
     try {
+      if (!courseid || !courseName) {
+        return response.status(400).json({
+          success: false,
+          message: "CourseID and CourseName are required",
+        });
+      }
+      const allCreditsZero = Object.values(credits || {}).every((c) => c === 0);
+      if (allCreditsZero) {
+        return response.status(400).json({
+          success: false,
+          message: "At least one credit must be greater than 0",
+        });
+      }
       const {
         LEC,
         LAB,
