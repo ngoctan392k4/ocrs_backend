@@ -7,18 +7,9 @@ router.get("/api/admin/ClassManagement", async (req, res) => {
   try {
 
   const classesResult = await pool.query("SELECT * FROM getClassesWithSchedule()");
-    // Lấy course
-    const courseResult = await pool.query("SELECT * FROM get_course()");
-
-    // Lấy instructor
-    const instructorResult = await pool.query("SELECT * FROM get_allinstructor()");
-    const Semester = await pool.query("SELECT * FROM get_semester()");
 
     return res.json({
-      classes: classesResult.rows, 
-      courses: courseResult.rows,
-      instructors: instructorResult.rows,
-      semester: Semester.rows
+      classes: classesResult.rows
     });
 
   } catch (error) {
