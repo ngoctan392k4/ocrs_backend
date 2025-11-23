@@ -184,19 +184,17 @@ router.put(
         });
       }
 
-      // tam thoi ko check trung cho Edit
+      const { rows: existsRows_name } = await pool.query(
+        `SELECT checkCourseNameExists($1, $2) AS exists`,
+        [courseName, courseid]
+      );
 
-      // const { rows: existsRows_name } = await pool.query(
-      //   `SELECT checkCourseNameExists($1) AS exists`,
-      //   [courseName]
-      // );
-
-      // if (existsRows_name[0].exists) {
-      //   return response.status(400).json({
-      //     success: false,
-      //     message: `Course name "${courseName}" already exists. Please use a different Course Name.`,
-      //   });
-      // }
+      if (existsRows_name[0].exists) {
+        return response.status(400).json({
+          success: false,
+          message: `Course name "${courseName}" already exists. Please use a different Course Name.`,
+        });
+      }
 
       const allCreditsZero = Object.values(credits || {}).every((c) => c === 0);
       if (allCreditsZero) {
