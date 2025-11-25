@@ -5,6 +5,7 @@ import authRouter from '../auth/auth.mjs';
 import classRoute from '../admin/ClassManagement/ViewClass.mjs';
 import addAccountRouter from '../admin/AccountManagement/AddAccount.mjs'
 import DeleteAccountRouter from '../admin/AccountManagement/DeleteAccount.mjs'
+import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
 
 
 const router = Router();
@@ -14,6 +15,7 @@ router.use(classRoute);
 router.use(viewAccountRouter);
 router.use(addAccountRouter);
 router.use(DeleteAccountRouter);
+router.use(EditAccountRouter);
 
 
 
