@@ -45,6 +45,10 @@ export default passport.use(
                 return done(null, false, { message: 'Incorrect Password' });
             }
 
+            if(user.status === "inactive"){
+                return done(null, false, { message: 'Inactive account' });
+            }
+
             return done(null, user);
 
         } catch (error) {
