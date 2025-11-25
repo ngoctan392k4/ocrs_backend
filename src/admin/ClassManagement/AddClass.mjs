@@ -3,41 +3,34 @@ import pool from "../../utils/pgConfig.mjs";
 
 const router = Router();
 
-/* ------------------------------
-  POST: Add new class via procedure
------------------------------- */
 router.post("/api/admin/ClassManagement/addClass", async (req, res) => {
   try {
     const { classcode, courseid, instructorid, semid, classname, capacity, schedule } = req.body;
 
-    // CALL procedure add_class_with_schedule
-    // Giả sử procedure có OUT parameter p_clsID
     await pool.query(
-      `CALL add_class_with_schedule(
-        $1, $2, $3, $4, $5, $6, $7::json, $8
-      )`,
-      [
-        classcode,
-        courseid,
-        instructorid,
-        semid,
-        classname,
-        capacity,
-        JSON.stringify(schedule),
-        null // OUT parameter
-      ]
+      `CALL add_class_with_schedule($1, $2, $3, $4, $5, $6, $7::json, $8)`,
+      [classcode, courseid, instructorid, semid, classname, capacity, JSON.stringify(schedule), null]
     );
 
     return res.json({ success: true, message: "Class added successfully!" });
+
   } catch (err) {
-    console.error("POST /addClass ERROR:", err.message);
+    console.error("POST /addClass ERROR:", err);
+
+    // Bắt lỗi duplicate từ constraint
+    if (err.code === "23505") {
+      return res.status(400).json({ code: err.code, field: "classcode", message: "Class Code is existed!" });
+    }
+
+    // Bắt lỗi từ RAISE EXCEPTION trong procedure
+    if (err.message.includes("already exists!")) {
+      return res.status(400).json({ code: "PROC_DUPLICATE", field: "classcode", message: "Class Code is existed!" });
+    }
+
     return res.status(500).json({ message: "Database error" });
   }
 });
 
-/* ------------------------------
-  GET: Fetch courses, instructors, latest semester
------------------------------- */
 router.get("/api/admin/ClassManagement/addClass", async (req, res) => {
   try {
     const courseResult = await pool.query("SELECT * FROM get_course()");
