@@ -5,7 +5,7 @@ const router = Router();
 
 router.get("/api/admin/accountManagement", async(req, res) => {
     try {
-        const data = await pool.query('SELECT accountid, full_name, email, status, role, username FROM get_account_list()');
+        const data = await pool.query('SELECT * FROM get_account_list()');
         return res.json(data.rows);
     } catch(error) {
         console.error("DB ERROR: ", error.message);
