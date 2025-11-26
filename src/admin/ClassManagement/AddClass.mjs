@@ -17,16 +17,21 @@ router.post("/api/admin/ClassManagement/addClass", async (req, res) => {
   } catch (err) {
     console.error("POST /addClass ERROR:", err);
 
-    // Bắt lỗi duplicate từ constraint
+    // Lỗi trùng khóa học
     if (err.code === "23505") {
       return res.status(400).json({ code: err.code, field: "classcode", message: "Class Code is existed!" });
     }
 
-    // Bắt lỗi từ RAISE EXCEPTION trong procedure
     if (err.message.includes("already exists!")) {
       return res.status(400).json({ code: "PROC_DUPLICATE", field: "classcode", message: "Class Code is existed!" });
     }
 
+    // Lỗi trùng lịch từ procedure
+    if (err.code === "P0001" && err.message.includes("schedule conflict")) {
+      return res.status(400).json({ code: "SCHEDULE_OVERLAP", message: "Schedule overlap!" });
+    }
+
+    // Lỗi khác
     return res.status(500).json({ message: "Database error" });
   }
 });
@@ -34,9 +39,7 @@ router.post("/api/admin/ClassManagement/addClass", async (req, res) => {
 router.get("/api/admin/ClassManagement/addClass", async (req, res) => {
   try {
     const courseResult = await pool.query("SELECT * FROM get_course()");
-
     const instructorResult = await pool.query("SELECT * FROM get_allinstructor()");
-
     const latestSemester = await pool.query("SELECT * FROM get_latest_semester()");
 
     return res.json({
