@@ -25,34 +25,30 @@ router.put("/api/admin/accountManagement/edit/:accountid", async(req, res, next)
     const { username, mail, phone: phone_number, dob, role, selectedStatus: status, department, major, name: full_name } = req.body;
     try {
         //Check if mail exists
-        const check_email = await pool.query(
-            "SELECT check_exist_email($1) AS exists", 
-        [mail]
+        const { rows: existsRows_email } = await pool.query(
+            "SELECT check_exist_email($1, $2) AS exists", 
+            [mail, accountid]
         );
-        
-        const matchEmail = check_email.rows[0].exists;
 
-        if (matchEmail) {
+        if (existsRows_email[0].exists) {
             return res.status(400).json(
                 {
-                    message: "Email exists"
-                }
-            );
+                    success: false,
+                    message: `Email "${mail}" already exists.`
+                });
         }
 
-        const check_username = await pool.query(
-            "SELECT check_exist_user($1) AS exists",
-        [username]
+        const { rows: existsRows_username } = await pool.query(
+            "SELECT check_exist_user($1, $2) AS exists",
+        [username, accountid]
         );
 
-        const matchUsername = check_username.rows[0].exists;
-
-        if (matchUsername) {
+        if (existsRows_username[0].exists) {
             return res.status(400).json(
                 {
-                    message: "User exists"
-                }
-            )
+                    success: false,
+                    message: `Username "${username}" already exists.`
+                });
         }
 
         await pool.query(
