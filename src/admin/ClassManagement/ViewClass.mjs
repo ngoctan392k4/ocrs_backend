@@ -28,12 +28,10 @@ router.post("/api/admin/semester/next", async (req, res) => {
   }
 });
 
-// Xóa class
 router.delete("/api/admin/ClassManagement/:clsid", async (req, res) => {
   const { clsid } = req.params;
 
   try {
-    // CALL procedure
     await pool.query("CALL delete_class($1)", [clsid]);
 
     return res.json({ message: `Class ${clsid} deleted successfully.` });
