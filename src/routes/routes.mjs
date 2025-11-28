@@ -7,6 +7,7 @@ import addClassRouter from '../admin/ClassManagement/AddClass.mjs'
 import addAccountRouter from '../admin/AccountManagement/AddAccount.mjs'
 import DeleteAccountRouter from '../admin/AccountManagement/DeleteAccount.mjs'
 import editClassRouter from '../admin/ClassManagement/EditClass.mjs'
+import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
 
 
 const router = Router();
@@ -18,6 +19,7 @@ router.use(addAccountRouter);
 router.use(DeleteAccountRouter);
 router.use(addClassRouter);
 router.use(editClassRouter);
+router.use(EditAccountRouter);
 
 
 export default router;
