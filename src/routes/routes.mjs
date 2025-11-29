@@ -9,6 +9,7 @@ import DeleteAccountRouter from '../admin/AccountManagement/DeleteAccount.mjs'
 import ProfileRouter from '../ViewProfile/ViewProfile.mjs'
 import editClassRouter from '../admin/ClassManagement/EditClass.mjs'
 import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
+import OpenCourse from "../admin/OpenCourse/OpenCourse.mjs"
 
 
 const router = Router();
@@ -22,6 +23,7 @@ router.use(DeleteAccountRouter);
 router.use(addClassRouter);
 router.use(editClassRouter);
 router.use(EditAccountRouter);
+router.use(OpenCourse);
 
 
 
