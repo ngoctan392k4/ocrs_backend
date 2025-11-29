@@ -112,6 +112,18 @@ router.post(
         });
       }
 
+      // Check slots for the class
+      const check_registered_num = await pool.query("SELECT * FROM get_registered_number($1, $2)", [classID, semID])
+      const get_class_capacity = await pool.query("SELECT * FROM get_total_number($1, $2)", [classID, semID])
+
+      if (check_registered_num.rows[0].get_registered_number === get_class_capacity.rows[0].get_total_number){
+        return response.status(400).json({
+          message: `Class full`,
+          registered_num: check_registered_num.rows[0]?.get_registered_number,
+          capacity: get_class_capacity.rows[0]?.get_total_number
+        });
+      }
+
       return response.status(200).json({
           message: `successfully`,
         });
