@@ -10,7 +10,8 @@ import editClassRouter from '../admin/ClassManagement/EditClass.mjs'
 import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
 
 import ClassRegistrationRouter from '../student/registration.mjs'
-
+import viewAvailableCourseRouter from '../student/viewAvailableCourse.mjs'
+import viewAvalabieClassRouter from '../student/viewAvailableClass.mjs'
 const router = Router();
 router.use(authRouter);
 
@@ -26,5 +27,6 @@ router.use(EditAccountRouter);
 
 // Student
 router.use(ClassRegistrationRouter)
-
+router.use(viewAvailableCourseRouter)
+router.use(viewAvalabieClassRouter)
 export default router;
