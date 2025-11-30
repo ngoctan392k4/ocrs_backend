@@ -13,7 +13,7 @@ import pool from "../utils/pgConfig.mjs";
 import { genToken } from "../utils/genToken.mjs";
 import { hashPassword } from "../utils/hashFunc.mjs";
 import { sendResetPasswordEmail } from '../utils/sendResetPwd.mjs'
-import { log } from "console";
+
 
 const router = Router();
 
@@ -117,6 +117,24 @@ router.post("/api/auth/resetPassword", async (request, response, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+router.post("/api/auth/logout", (request, response, next) => {
+    request.logOut((err) => {
+        if (err) {
+            return next(err);
+        }
+
+        request.session.destroy((err) => {
+             if (err) {
+                console.error('Error destroying session after logout:', err);
+             }
+
+             response.clearCookie('connect.sid');
+
+             return response.status(200).json({ message: "Logout successful" });
+        });
+    });
 });
 
 export default router;

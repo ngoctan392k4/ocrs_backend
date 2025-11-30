@@ -3,16 +3,19 @@ import CourseManagementRouter from '../admin/CourseManagement/CourseManagement.m
 import viewAccountRouter from '../admin/AccountManagement/viewAccountList.mjs'
 import authRouter from '../auth/auth.mjs'
 import classRoute from '../admin/ClassManagement/ViewClass.mjs'
-import addClassRouter from '../admin/ClassManagement/AddClass.mjs'  
+import addClassRouter from '../admin/ClassManagement/AddClass.mjs'
 import addAccountRouter from '../admin/AccountManagement/AddAccount.mjs'
 import DeleteAccountRouter from '../admin/AccountManagement/DeleteAccount.mjs'
 import editClassRouter from '../admin/ClassManagement/EditClass.mjs'
 import viewRegisteredRouter from '../student/ClassRegistration/RegisteredClass.mjs'
 import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
 
+import ClassRegistrationRouter from '../student/registration.mjs'
 
 const router = Router();
 router.use(authRouter);
+
+// Admin
 router.use(CourseManagementRouter);
 router.use(classRoute);
 router.use(viewAccountRouter);
@@ -24,5 +27,7 @@ router.use(viewRegisteredRouter);
 router.use(EditAccountRouter);
  
 
+// Student
+router.use(ClassRegistrationRouter)
 
 export default router;
