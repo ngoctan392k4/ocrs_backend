@@ -7,10 +7,14 @@ import addClassRouter from '../admin/ClassManagement/AddClass.mjs'
 import addAccountRouter from '../admin/AccountManagement/AddAccount.mjs'
 import DeleteAccountRouter from '../admin/AccountManagement/DeleteAccount.mjs'
 import editClassRouter from '../admin/ClassManagement/EditClass.mjs'
+import viewRegisteredRouter from '../student/ClassRegistration/RegisteredClass.mjs'
 import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
 import OpenCourseRouter from '../admin/OpenCourse/OpenCourse.mjs'
 
 import ClassRegistrationRouter from '../student/registration.mjs'
+
+
+import Teaching from '../instructor/teaching.mjs'
 
 const router = Router();
 router.use(authRouter);
@@ -23,10 +27,15 @@ router.use(addAccountRouter);
 router.use(DeleteAccountRouter);
 router.use(addClassRouter);
 router.use(editClassRouter);
+router.use(viewRegisteredRouter);
 router.use(EditAccountRouter);
 router.use(OpenCourseRouter);
+ 
 
 // Student
 router.use(ClassRegistrationRouter)
+
+// Instructor
+router.use(Teaching)
 
 export default router;
