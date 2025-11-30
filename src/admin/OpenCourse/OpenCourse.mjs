@@ -7,38 +7,60 @@ const router = Router();
 
 router.get("/api/admin/openCourse", async (request, response) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM get_courses_not_in_upcoming()"
-    );
-    const latestSemester = await pool.query(
-      "SELECT * FROM get_latest_semester()"
+    const latestSemester = await pool.query("SELECT * FROM get_latest_semester()");
+    const latestSem = latestSemester.rows[0];
+    const semid = request.query.semid || latestSem?.semid;
+
+    const course = await pool.query(
+      "SELECT * FROM get_courses_by_semid($1)",
+      [semid]
     );
 
+    const courses = await pool.query(
+      "SELECT * FROM get_course()"
+    )
+
+    const allSem = await pool.query("SELECT * FROM get_all_semesters()");
+
     return response.json({
-      course: result.rows,
-      semester: latestSemester.rows,
+      allCourse: courses.rows,
+      course: course.rows,
+      latestSem,
+      allSem: allSem.rows
     });
+
   } catch (error) {
     console.error("DB ERROR:", error.message);
     return response.status(500).send("Database Error");
   }
 });
 
-router.post("/api/admin/openCourse", async (request, response) => {
-  const { courses } = request.body;
+//updateOpenCourse
+router.put("/api/admin/openCourse", async (request, response) => {
+  const { add, remove } = request.body;
 
-  if (!courses || courses.length == 0) {
-    return response.status(400).json({ message: "No courses selected" });
+  if (!add && !remove || add.length == 0 && remove.length == 0) {
+    return response.status(400).json({ message: "No update" });
   }
 
-  let count = 0;
+  let addCount = 0;
+  let removeCount = 0;
   try {
-    for (const courseid of courses) {
+    for (const courseid of add) {
       await pool.query("CALL add_upcoming_course($1)", [courseid]);
-      count += 1;
+      addCount += 1;
     }
 
-    return response.json({ message: `${count} course(s) opened successfully` });
+    for (const courseid of remove) {
+      await pool.query("CALL remove_upcoming_course($1)", [courseid]);
+      removeCount += 1;
+    }
+
+    const addMsg = addCount != 0 ? `${addCount} course(s) opened` : "No new course opened"
+    const removeMsg = removeCount != 0 ? `${removeCount} course(s) removed` : "No course removed"
+
+
+    return response.json({ message: addMsg +", "+ removeMsg });
   } catch (error) {
     console.error("DB ERROR:", error.message);
     return response.status(500).json({ error: "Failed to open courses" });
