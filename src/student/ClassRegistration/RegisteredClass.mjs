@@ -6,10 +6,12 @@ const router = Router();
 router.get("/api/student/registeredClass", async (req, res) => {
   try {
     const accountid = req.user.accountid;
+    const latestSemester = await pool.query("SELECT * FROM get_latest_semester()");
     const viewRegisteredResult = await pool.query("SELECT * FROM getInitialRegistrations($1)", [accountid]);
 
     return res.json({
-      registered: viewRegisteredResult.rows
+      registered: viewRegisteredResult.rows,
+      semesterlat: latestSemester.rows
     });
 
   } catch (error) {
