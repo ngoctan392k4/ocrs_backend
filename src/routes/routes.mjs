@@ -11,6 +11,9 @@ import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
 
 import ClassRegistrationRouter from '../student/registration.mjs'
 
+
+import Teaching from '../instructor/teaching.mjs'
+
 const router = Router();
 router.use(authRouter);
 
@@ -26,5 +29,8 @@ router.use(EditAccountRouter);
 
 // Student
 router.use(ClassRegistrationRouter)
+
+// Instructor
+router.use(Teaching)
 
 export default router;
