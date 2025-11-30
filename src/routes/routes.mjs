@@ -8,6 +8,7 @@ import addAccountRouter from '../admin/AccountManagement/AddAccount.mjs'
 import DeleteAccountRouter from '../admin/AccountManagement/DeleteAccount.mjs'
 import editClassRouter from '../admin/ClassManagement/EditClass.mjs'
 import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
+import OpenCourseRouter from '../admin/OpenCourse/OpenCourse.mjs'
 
 import ClassRegistrationRouter from '../student/registration.mjs'
 
@@ -23,6 +24,7 @@ router.use(DeleteAccountRouter);
 router.use(addClassRouter);
 router.use(editClassRouter);
 router.use(EditAccountRouter);
+router.use(OpenCourseRouter);
 
 // Student
 router.use(ClassRegistrationRouter)
