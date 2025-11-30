@@ -68,7 +68,7 @@ router.post("/api/admin/ClassManagement/addClass", async (req, res) => {
 
 router.get("/api/admin/ClassManagement/addClass", async (req, res) => {
   try {
-    const courseResult = await pool.query("SELECT * FROM get_course()");
+    const courseResult = await pool.query("SELECT * FROM get_upcoming_course()");
     const instructorResult = await pool.query("SELECT * FROM get_allinstructor()");
     const latestSemester = await pool.query("SELECT * FROM get_latest_semester()");
 
