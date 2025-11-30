@@ -36,4 +36,21 @@ router.get("/api/instructor/teaching/assignedClass", async (request, response) =
   }
 });
 
+router.post("/api/instructor/teaching/studentList", async (request, response) => {
+  try {
+    const {classID} = request.body;
+
+    const studentList = await pool.query(
+      "SELECT * FROM get_studentlist_by_classid($1)", [classID]
+    );
+
+    return response.json({
+      studentList: studentList.rows
+    });
+  } catch (error) {
+    console.log(error);
+    return response.status(400).json({ message: error.message });
+  }
+})
+
 export default router;
