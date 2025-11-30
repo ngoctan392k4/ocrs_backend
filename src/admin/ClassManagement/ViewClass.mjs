@@ -18,16 +18,6 @@ router.get("/api/admin/ClassManagement", async (req, res) => {
   }
 });
 
-router.post("/api/admin/semester/next", async (req, res) => {
-  try {
-    await pool.query("CALL create_next_semester()");
-    return res.json({ message: "Semester incremented" });
-  } catch (err) {
-    console.error("SEMESTER ERROR:", err.message);
-    return res.status(500).json({ error: "Database Error" });
-  }
-});
-
 router.delete("/api/admin/ClassManagement/:clsid", async (req, res) => {
   const { clsid } = req.params;
 
