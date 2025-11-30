@@ -68,9 +68,15 @@ router.post("/api/admin/ClassManagement/addClass", async (req, res) => {
 
 router.get("/api/admin/ClassManagement/addClass", async (req, res) => {
   try {
-    const courseResult = await pool.query("SELECT * FROM get_course()");
-    const instructorResult = await pool.query("SELECT * FROM get_allinstructor()");
     const latestSemester = await pool.query("SELECT * FROM get_latest_semester()");
+    const semid = latestSemester.rows[0].semid;   
+
+    const courseResult = await pool.query(
+      "SELECT * FROM get_courses_by_semid($1)", 
+      [semid]
+    );
+
+    const instructorResult = await pool.query("SELECT * FROM get_allinstructor()");
 
     return res.json({
       courses: courseResult.rows,
@@ -82,5 +88,6 @@ router.get("/api/admin/ClassManagement/addClass", async (req, res) => {
     return res.status(500).json({ message: "Database Error" });
   }
 });
+
 
 export default router;
