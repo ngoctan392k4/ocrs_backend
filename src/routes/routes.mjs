@@ -15,6 +15,7 @@ import ClassRegistrationRouter from '../student/registration.mjs'
 
 
 import Teaching from '../instructor/teaching.mjs'
+import TeachingSchedule from '../instructor/Schedule/TeachingSchedule.mjs';
 
 const router = Router();
 router.use(authRouter);
@@ -36,6 +37,7 @@ router.use(OpenCourseRouter);
 router.use(ClassRegistrationRouter)
 
 // Instructor
-router.use(Teaching)
+router.use(Teaching);
+router.use(TeachingSchedule);
 
 export default router;
