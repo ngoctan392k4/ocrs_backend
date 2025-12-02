@@ -13,6 +13,8 @@ import OpenCourseRouter from '../admin/OpenCourse/OpenCourse.mjs'
 
 import ClassRegistrationRouter from '../student/registration.mjs'
 import StudySchedule from '../student/Schedule/StudySchedule.mjs';
+import viewAvailableCourseRouter from '../student/viewAvailableCourse.mjs'
+import viewAvalabieClassRouter from '../student/viewAvailableClass.mjs'
 
 
 import Teaching from '../instructor/teaching.mjs'
@@ -37,6 +39,9 @@ router.use(OpenCourseRouter);
 // Student
 router.use(ClassRegistrationRouter);
 router.use(StudySchedule);
+router.use(ClassRegistrationRouter)
+router.use(viewAvailableCourseRouter)
+router.use(viewAvalabieClassRouter)
 
 // Instructor
 router.use(Teaching);
