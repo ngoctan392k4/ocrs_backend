@@ -3,10 +3,9 @@ import pool from "../../utils/pgConfig.mjs";
 
 const router = Router();
 
-router.get("/api/instructor/schedule/teachingSchedule", async (req, res) => {
+router.get("/api/student/schedule/studySchedule", async (req, res) => {
   try {
     const accountid = req.user.accountid;
-    console.log(accountid);
     if (!accountid) {
       return res.status(401).json({ message: "Unauthorized: No accountid" });
     }
@@ -19,17 +18,16 @@ router.get("/api/instructor/schedule/teachingSchedule", async (req, res) => {
     }
 
     const semid = currentSem.semid;
-    console.log(semid);
 
-    const registeredResult = await pool.query(
-      "SELECT * FROM getteachingschedule($1, $2)",
+    const enrolledResult = await pool.query(
+      "SELECT * FROM getstudentschedule($1, $2)",
       [accountid, semid]
     );
 
-    const assigned = registeredResult.rows;
+    const enrolled = enrolledResult.rows;
 
     return res.json({
-      assigned,
+      enrolled,
       currentSem
     });
   } catch (error) {
