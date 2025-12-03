@@ -12,15 +12,13 @@ import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
 import OpenCourseRouter from '../admin/OpenCourse/OpenCourse.mjs'
 
 import ClassRegistrationRouter from '../student/registration.mjs'
-<<<<<<< HEAD
+import StudySchedule from '../student/Schedule/StudySchedule.mjs';
 import viewAvailableCourseRouter from '../student/viewAvailableCourse.mjs'
 import viewAvalabieClassRouter from '../student/viewAvailableClass.mjs'
-=======
-
 
 import Teaching from '../instructor/teaching.mjs'
+import TeachingSchedule from '../instructor/Schedule/TeachingSchedule.mjs';
 
->>>>>>> 76a30e20fb2d48f21782e2e89df4d4d38a77e584
 const router = Router();
 router.use(authRouter);
 
@@ -35,17 +33,15 @@ router.use(editClassRouter);
 router.use(viewRegisteredRouter);
 router.use(EditAccountRouter);
 router.use(OpenCourseRouter);
- 
 
 // Student
-router.use(ClassRegistrationRouter)
-<<<<<<< HEAD
-router.use(viewAvailableCourseRouter)
-router.use(viewAvalabieClassRouter)
-=======
+router.use(ClassRegistrationRouter);
+router.use(StudySchedule);
+router.use(viewAvailableCourseRouter);
+router.use(viewAvalabieClassRouter);
 
 // Instructor
-router.use(Teaching)
+router.use(Teaching);
+router.use(TeachingSchedule);
 
->>>>>>> 76a30e20fb2d48f21782e2e89df4d4d38a77e584
 export default router;
