@@ -125,6 +125,15 @@ router.delete("/api/admin/CourseManagement/:courseid", async (req, res) => {
     return res.status(500).send("Database Error");
   }
 });
+router.get("/api/admin/getLatestSemester", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM get_latest_semester()");
+    return res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("DB Error");
+  }
+});
 
 // Edit Course
 
