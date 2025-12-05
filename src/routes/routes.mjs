@@ -15,6 +15,7 @@ import ClassRegistrationRouter from '../student/registration.mjs'
 import StudySchedule from '../student/Schedule/StudySchedule.mjs';
 import viewAvailableCourseRouter from '../student/viewAvailableCourse.mjs'
 import viewAvalabieClassRouter from '../student/viewAvailableClass.mjs'
+import payTutionRouter from '../student/TuitionPayment/payTuition.mjs'
 
 
 import Teaching from '../instructor/teaching.mjs'
@@ -42,6 +43,9 @@ router.use(StudySchedule);
 router.use(ClassRegistrationRouter)
 router.use(viewAvailableCourseRouter)
 router.use(viewAvalabieClassRouter)
+router.use(viewAvailableCourseRouter);
+router.use(viewAvalabieClassRouter);
+router.use(payTutionRouter);
 
 // Instructor
 router.use(Teaching);
