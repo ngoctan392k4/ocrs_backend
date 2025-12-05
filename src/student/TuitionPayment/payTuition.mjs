@@ -17,11 +17,11 @@ const payos = new PayOS(
 
 router.get("/api/student/tuition", async (req, res) => {
     try {
-        const { student_id } = req.query;
+        const { accountid } = req.user;
 
         const data = await pool.query(
             'SELECT * FROM get_student_tuition($1)',
-            [student_id]
+            [accountid]
         )
 
         return res.json(data.rows);
@@ -33,7 +33,8 @@ router.get("/api/student/tuition", async (req, res) => {
 });
 
 router.post("/api/student/payment/create-link", async (req, res) => {
-    const { amount, student_id } = req.body;
+    const { amount } = req.body;
+    const { accountid } = req.user;
 
     try {
         const orderCode = Number(String(Date.now()).slice(-6));
@@ -41,7 +42,7 @@ router.post("/api/student/payment/create-link", async (req, res) => {
         const paymentData = {
             orderCode: orderCode,
             amount: Number(amount),
-            description: `Tuition ${student_id}`,
+            description: `Tuition`,
             items: [
                 {
                     name: `Tuition Fee - Current Semester`,
@@ -57,7 +58,7 @@ router.post("/api/student/payment/create-link", async (req, res) => {
 
         await pool.query(
             `CALL link_order_to_payment($1, $2)`,
-            [student_id, orderCode]
+            [accountid, orderCode]
         );
 
         return res.json({
@@ -75,7 +76,8 @@ router.post("/api/student/tuition/webhook", async (req, res) => {
 
     try {
         const webhookData = await payos.webhooks.verify(req.body);
-
+        console.log("CODE NEF: " + webhookData.code);
+        
         //If payment is success
         if (webhookData.code === "00") {
             console.log("Checking...")
