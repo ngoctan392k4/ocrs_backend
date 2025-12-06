@@ -107,24 +107,34 @@ router.post("/api/admin/CourseManagement", async (request, response) => {
   }
 });
 
-// DelCourse
-
+// DELETE Course
 router.delete("/api/admin/CourseManagement/:courseid", async (req, res) => {
   const { courseid } = req.params;
 
   try {
-    const result = await pool.query("CALL delete_course($1)", [courseid]);
+    await pool.query("CALL delete_course($1)", [courseid]);
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: "Course not found" });
-    }
+    return res.json({
+      success: true,
+      message: "Course deleted successfully"
+    });
 
-    return res.json({ message: "Course deleted successfully" });
   } catch (error) {
-    console.error("DELETE ERROR:", error.message);
-    return res.status(500).send("Database Error");
+    console.error("DELETE ERROR:", error);
+
+    const pgMsg = error.message || "";
+    const cleaned = pgMsg
+      .replace("ERROR:", "")
+      .replace("CONTEXT:", "")
+      .trim();
+
+    return res.status(400).json({
+      success: false,
+      message: cleaned
+    });
   }
 });
+
 
 // Edit Course
 
