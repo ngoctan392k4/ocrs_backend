@@ -5,11 +5,14 @@ const router = Router();
 
 router.get("/api/admin/ClassManagement", async (req, res) => {
   try {
-
-  const classesResult = await pool.query("SELECT * FROM getClassesWithSchedule()");
+    const curSemester = await pool.query("SELECT * FROM get_current_semester()");
+    const latestSemester = await pool.query("SELECT * FROM get_latest_semester()");
+    const classesResult = await pool.query("SELECT * FROM getClassesWithSchedule()");
 
     return res.json({
-      classes: classesResult.rows
+      classes: classesResult.rows,
+      semestercur: curSemester.rows,
+      semesterlat: latestSemester.rows
     });
 
   } catch (error) {
