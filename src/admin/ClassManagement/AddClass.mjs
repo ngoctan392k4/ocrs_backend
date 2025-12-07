@@ -88,80 +88,40 @@ router.get("/api/admin/ClassManagement/addClass", async (req, res) => {
     const latest = latestRes.rows[0];
     const current = currentRes.rows[0];
 
-    // Nếu cả 2 đều không có → lỗi nghiêm trọng
-    if (!latest && !current) {
+    if (!latest) {
       return res.status(400).json({
-        code: "NO_SEMESTER",
-        message: "No semester data found!",
+        code: "NO_LATEST_SEMESTER",
+        message: "No latest semester found!",
       });
     }
 
-    // =======================================================
-    // CASE 1: current semester KHÔNG có → dùng latest luôn
-    // =======================================================
-    if (!current) {
-      const courses = await pool.query(
-        "SELECT * FROM get_courses_by_semid($1)",
-        [latest.semid]
-      );
-
-      if (courses.rows.length === 0) {
-        return res.status(400).json({
-          code: "NO_COURSE_LATEST",
-          message: `No courses have been opened for ${latest.semid} yet!`,
-        });
-      }
-
-      const instructors = await pool.query("SELECT * FROM get_allinstructor()");
-
-      return res.json({
-        allowSemid: latest.semid,
-        semesterInfo: latest,
-        statusMessage: "CURRENT_NOT_FOUND_USE_LATEST",
-        courses: courses.rows,
-        instructors: instructors.rows,
-        latestSemester: latest,
-      });
-    }
-
-    // =======================================================
-    // CASE 2: current = latest
-    // → chỉ cho add class trong 7 ngày từ start_date
-    // =======================================================
+    // CASE: current equals latest -> next semester not created yet
     if (current && current.semid === latest.semid) {
-      const today = new Date();
-      const startDate = new Date(current.start_date);
-      const deadlineDate = new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-      if (today > deadlineDate) {
-        return res.status(400).json({
-          code: "DEADLINE_EXPIRED",
-          message: "The deadline for adding classes for this semester has expired",
-          latestSemester: latest,
-        });
-      }
-
-      // OK → cho add class cho current
-      const courses = await pool.query(
-        "SELECT * FROM get_courses_by_semid($1)",
-        [current.semid]
-      );
-
-      const instructors = await pool.query("SELECT * FROM get_allinstructor()");
-
-      return res.json({
-        allowSemid: current.semid,
-        semesterInfo: current,
-        statusMessage: "ALLOW_CURRENT_7_DAYS",
-        courses: courses.rows,
-        instructors: instructors.rows,
+      return res.status(400).json({
+        code: "CURRENT_EQUALS_LATEST",
+        message: "Next semester not created yet!",
         latestSemester: latest,
       });
     }
 
-    // =======================================================
-    // CASE 3: current ≠ latest → add class cho latest
-    // =======================================================
+    // TÍNH NGÀY HẠN: limitDate = latest.start_date - 14 ngày
+    const today = new Date();
+    const latestStart = new Date(latest.start_date);
+
+    const limitDate = new Date(latestStart);
+    limitDate.setDate(limitDate.getDate() - 14);
+
+    // Nếu today >= limitDate => trong vòng 14 ngày trước khi kỳ bắt đầu => khóa
+    if (today >= limitDate) {
+      return res.status(400).json({
+        code: "DEADLINE_EXPIRED_14",
+        message:
+          "The deadline for adding classes for the next semester has expired",
+        latestSemester: latest,
+      });
+    }
+
+    // Nếu vượt qua kiểm tra hạn thì lấy danh sách môn của latest
     const courseResult = await pool.query(
       "SELECT * FROM get_courses_by_semid($1)",
       [latest.semid]
@@ -180,12 +140,11 @@ router.get("/api/admin/ClassManagement/addClass", async (req, res) => {
     return res.json({
       allowSemid: latest.semid,
       semesterInfo: latest,
-      statusMessage: "ALLOW_LATEST",
+      statusMessage: "ALLOW_ADD",
       courses: courseResult.rows,
       instructors: instructors.rows,
       latestSemester: latest,
     });
-
   } catch (error) {
     console.error("GET /addClass DB ERROR:", error);
     return res.status(500).json({ message: "Database Error" });
