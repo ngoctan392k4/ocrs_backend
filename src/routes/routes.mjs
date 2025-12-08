@@ -46,6 +46,9 @@ router.use(viewAvailableCourseRouter)
 router.use(viewAvalabieClassRouter)
 router.use(payTuitionRouter)
 router.use(paymentHistory)
+router.use(viewAvailableCourseRouter);
+router.use(viewAvalabieClassRouter);
+router.use(payTutionRouter);
 
 // Instructor
 router.use(Teaching);
