@@ -36,7 +36,7 @@ router.use(editClassRouter);
 router.use(viewRegisteredRouter);
 router.use(EditAccountRouter);
 router.use(OpenCourseRouter);
- 
+
 
 // Student
 router.use(ClassRegistrationRouter);
@@ -48,7 +48,6 @@ router.use(payTuitionRouter)
 router.use(paymentHistory)
 router.use(viewAvailableCourseRouter);
 router.use(viewAvalabieClassRouter);
-router.use(payTutionRouter);
 
 // Instructor
 router.use(Teaching);
