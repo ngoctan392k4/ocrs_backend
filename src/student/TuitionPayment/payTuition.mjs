@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createRequire } from "module";
 import pool from "../../utils/pgConfig.mjs";
+import { sendInvoiceEmail } from "../../utils/sendInvoiceEmail.mjs";
 
 const router = Router();
 
@@ -76,11 +77,9 @@ router.post("/api/student/tuition/webhook", async (req, res) => {
 
     try {
         const webhookData = await payos.webhooks.verify(req.body);
-        console.log("CODE NEF: " + webhookData.code);
         
         //If payment is success
         if (webhookData.code === "00") {
-            console.log("Checking...")
             const { orderCode } = webhookData;
 
             // Update data in DB to 'PAID'
@@ -89,6 +88,41 @@ router.post("/api/student/tuition/webhook", async (req, res) => {
                 [orderCode, 'Paid']
             );
 
+            try {
+                // Fetch Student & Payment Info
+                const studentQuery = await pool.query(
+                    `SELECT * FROM get_payment_from_orderCode($1)`,
+                    [orderCode]
+                );
+
+                // Fetch Course Details
+                const coursesQuery = await pool.query(
+                    `SELECT * FROM get_paymentdetails_from_orderCode($1)`,
+                    [orderCode]
+                );
+
+                if (studentQuery.rows.length > 0) {
+                    const { name, emailaddress, total_amount, date } = studentQuery.rows[0];
+                    const courseList = coursesQuery.rows;
+
+                    const paymentDate = new Date(date).toLocaleDateString("en-GB");
+
+                    // Send Email
+                    sendInvoiceEmail(
+                        emailaddress,
+                        name,
+                        orderCode,
+                        total_amount,
+                        paymentDate,
+                        courseList
+                    );
+                } else {
+                    console.log("WARNING: Payment found but no Student info returned.")
+                }
+            } catch (e) {
+                console.error("Failed to fetch info for email:", e);
+                // We do not throw here to ensure we still return { success: true } to PayOS
+            }
         }
 
         return res.json({ success: true });
