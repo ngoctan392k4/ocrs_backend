@@ -77,9 +77,12 @@ router.post("/api/student/recommendCourse", async (request, response) => {
     const text_version = response_AI.text();
     console.log(`[${new Date().toISOString()}]`);
     response.json(JSON.parse(text_version));
-
   } catch (error) {
-    response.json({ msg: error.message });
+    if (error.message.includes("429") || error.status === 429) {
+      return response.status(429).json({message: "429"});
+    }
+
+    return response.status(500).json({message: error.message});
   }
 });
 
