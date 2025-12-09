@@ -22,6 +22,8 @@ import paymentHistory from '../student/TuitionPayment/paymentHistory.mjs'
 import Teaching from '../instructor/teaching.mjs'
 import TeachingSchedule from '../instructor/Schedule/TeachingSchedule.mjs';
 
+import recommendationController from '../student/AI/Recommendation/recommendationController.mjs'
+
 const router = Router();
 router.use(authRouter);
 
@@ -48,6 +50,7 @@ router.use(payTuitionRouter)
 router.use(paymentHistory)
 router.use(viewAvailableCourseRouter);
 router.use(viewAvalabieClassRouter);
+router.use(recommendationController);
 
 // Instructor
 router.use(Teaching);
