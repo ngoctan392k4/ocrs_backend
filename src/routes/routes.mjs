@@ -19,6 +19,7 @@ import viewAvalabieClassRouter from '../student/viewAvailableClass.mjs'
 
 import Teaching from '../instructor/teaching.mjs'
 import TeachingSchedule from '../instructor/Schedule/TeachingSchedule.mjs';
+import ClassGrade from '../instructor/ClassGrade.mjs'
 
 const router = Router();
 router.use(authRouter);
@@ -46,5 +47,6 @@ router.use(viewAvalabieClassRouter)
 // Instructor
 router.use(Teaching);
 router.use(TeachingSchedule);
+router.use(ClassGrade);
 
 export default router;
