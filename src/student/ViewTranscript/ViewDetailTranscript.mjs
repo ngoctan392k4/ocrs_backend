@@ -43,11 +43,13 @@ router.get(
       const accountid = request.user.accountid;
 
       const grade = await pool.query("SELECT * FROM get_student_class_grades($1, $2)", [accountid, classid])
+      const total = await pool.query("SELECT * FROM sum_grade($1, $2)", [accountid, classid])
       const classes = await pool.query("SELECT * FROM getclass($1)", [classid])
 
       return response.json({
         grade: grade.rows,
-        classes: classes.rows[0]
+        classes: classes.rows[0],
+        total: total.rows[0].sum_grade
       })
     } catch (error) {
       console.error("DB ERROR:", error.message);
