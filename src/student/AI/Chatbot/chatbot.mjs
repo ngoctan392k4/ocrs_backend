@@ -98,6 +98,7 @@ router.post("/api/student/chat", async (request, response) => {
                 - Carefully read the "logic" (AND/OR) and "group" columns.
                 - If groups are the same, consider the logic within that group.
                 - If groups are different, default to AND (must satisfy all groups).
+            4. "HISTORY": List of course codes that student has already studied
 
             GUARDRAIL'S GUIDELINES:
                 - Only answer questions about: Courses, Credit Registration, Prerequisites, and Study Pathways based on the given inputs.
