@@ -53,6 +53,17 @@ router.post("/api/student/recommendCourse", async (request, response) => {
             3. The curriculum of student's major: ${JSON.stringify(curriculum)}
             4. Prerequisite rules: ${JSON.stringify(prerequisite)}
 
+            DATA READING INSTRUCTIONS:
+            1. "OPEN_CLASSES": List of course codes for registration.
+            2. "CURRICULUM":
+                - "selection_rule": "MANDATORY" (Required courses).
+                - "selection_rule": "OPTIONAL_PICK_N" (Optional courses, must accumulate enough courses according to "pick_count").
+            3. "PREREQUISITES" (Prerequisite courses):
+                - Carefully read the "logic" (AND/OR) and "group" columns.
+                - If groups are the same, consider the logic within that group.
+                - If groups are different, default to AND (must satisfy all groups).
+            4. "HISTORY": List of course codes that student has already studied
+
             TASK:
             Suggest courses for this student based on the following rules:
             - Rule 1: Only suggest courses that are in the "Open Courses" list.
@@ -61,7 +72,9 @@ router.post("/api/student/recommendCourse", async (request, response) => {
                 + If the course is not in the rules list -> Allowed to take.
                 + If the course has a rule -> Check if the student has taken the required courses.
                 + Note the AND/OR logic in the condition groups. AND is mandatory for all prerequisites; OR is optional with pick of n for prerequisites
-
+            - Rule 4: Only suggest courses that are in the "curriculum" of the student. If the course is in "curriculum" and sastified other conditions it must been recommended
+            - Rule 5: Suggest all satisfied courses
+            
             OUTPUT FORMAT (List):
             [
                 course_id, course_id, course_id,....
