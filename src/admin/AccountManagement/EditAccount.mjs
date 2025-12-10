@@ -24,6 +24,12 @@ router.put("/api/admin/accountManagement/edit/:accountid", async(req, res, next)
     const { accountid } = req.params;
     const { username, mail, phone: phone_number, dob, role, selectedStatus: status, department, major, name: full_name } = req.body;
     try {
+        if (!dob) {
+            return res.status(400).json({
+                success: false,
+                message: "Date of birth is required."
+            });
+        }
         //Check if mail exists
         const { rows: existsRows_email } = await pool.query(
             "SELECT check_exist_email($1, $2) AS exists", 
