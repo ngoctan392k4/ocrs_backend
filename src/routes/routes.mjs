@@ -22,6 +22,9 @@ import paymentHistory from '../student/TuitionPayment/paymentHistory.mjs'
 import Teaching from '../instructor/teaching.mjs'
 import TeachingSchedule from '../instructor/Schedule/TeachingSchedule.mjs';
 
+import recommendationController from '../student/AI/Recommendation/recommendationController.mjs'
+import chatbot from '../student/AI/Chatbot/chatbot.mjs'
+
 const router = Router();
 router.use(authRouter);
 
@@ -48,6 +51,8 @@ router.use(payTuitionRouter)
 router.use(paymentHistory)
 router.use(viewAvailableCourseRouter);
 router.use(viewAvalabieClassRouter);
+router.use(recommendationController);
+router.use(chatbot);
 
 // Instructor
 router.use(Teaching);
