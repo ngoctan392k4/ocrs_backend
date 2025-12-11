@@ -9,7 +9,6 @@ router.get(
   async (request, response) => {
     try {
       const accountid = request.user.accountid;
-      console.log(accountid);
       if (!accountid) {
         return response
           .status(401)
