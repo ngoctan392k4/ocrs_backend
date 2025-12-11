@@ -22,6 +22,7 @@ import detailTranscriptRouter from '../student/ViewTranscript/ViewDetailTranscri
 
 import Teaching from '../instructor/teaching.mjs'
 import TeachingSchedule from '../instructor/Schedule/TeachingSchedule.mjs';
+import ClassGrade from '../instructor/ClassGrade.mjs'
 
 import recommendationController from '../student/AI/Recommendation/recommendationController.mjs'
 import chatbot from '../student/AI/Chatbot/chatbot.mjs'
@@ -59,5 +60,6 @@ router.use(chatbot);
 // Instructor
 router.use(Teaching);
 router.use(TeachingSchedule);
+router.use(ClassGrade);
 
 export default router;
