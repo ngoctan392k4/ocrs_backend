@@ -106,4 +106,14 @@ router.post("/api/addAccount", async (request, response, next) => {
   }
 });
 
+router.get("/api/student/major", async (request, response) => {
+  try {
+    const result = await await pool.query("SELECT * FROM get_major()")
+    return response.status(200).json(result.rows)
+  } catch (error) {
+    return response.status(500).json({message: error.message});
+  }
+});
+
+
 export default router;
