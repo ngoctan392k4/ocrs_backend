@@ -18,7 +18,7 @@ import viewAvalabieClassRouter from '../student/viewAvailableClass.mjs'
 import payTuitionRouter from '../student/TuitionPayment/payTuition.mjs'
 import paymentHistory from '../student/TuitionPayment/paymentHistory.mjs'
 import detailTranscriptRouter from '../student/ViewTranscript/ViewDetailTranscript.mjs'
-
+import overallTransciptRouter from '../student/ViewTranscript/ViewOverallTranscript.mjs'
 
 import Teaching from '../instructor/teaching.mjs'
 import TeachingSchedule from '../instructor/Schedule/TeachingSchedule.mjs';
@@ -56,6 +56,7 @@ router.use(viewAvalabieClassRouter);
 router.use(detailTranscriptRouter);
 router.use(recommendationController);
 router.use(chatbot);
+router.use(overallTransciptRouter);
 
 // Instructor
 router.use(Teaching);
