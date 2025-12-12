@@ -59,12 +59,14 @@ router.post(
   "/api/student/classRegiter/confirmClass",
   async (request, response) => {
     try {
-      const { classID, semID } = request.body;
+      const { classCode, semID } = request.body;
+      const classID = classCode + '-' + semID;
+      console.log(classID);
 
       // Check if class exists
       const check_classID = await pool.query(
         "SELECT * FROM check_class_sem($1, $2)",
-        [classID, semID]
+        [classCode, semID]
       );
       const isExist = check_classID.rows[0].check_class_sem;
 
@@ -77,10 +79,10 @@ router.post(
       const accountid = request.user.accountid;
 
       // Check if student is satified with preqs
-      const check_preq = await pool.query("SELECT * FROM check_prerequisite_satisfied($1, $2, $3)", [accountid, classID, semID])
+      const check_preq = await pool.query("SELECT * FROM check_prerequisite_satisfied($1, $2, $3)", [accountid, classCode, semID])
       const isSatified = check_preq.rows[0].check_prerequisite_satisfied;
       if (!isSatified) {
-        const preq = await pool.query("SELECT * FROM get_preq($1, $2)", [classID, semID])
+        const preq = await pool.query("SELECT * FROM get_preq($1, $2)", [classCode, semID])
 
         return response.status(400).json({
                 message: 'Not satified',
@@ -91,7 +93,7 @@ router.post(
       // Check if student registered in the same semester with the same course
       const check_registered = await pool.query(
         "SELECT * FROM check_registered($1, $2, $3)",
-        [classID, semID, accountid]
+        [classCode, semID, accountid]
       );
       if (check_registered.rowCount !== 0) {
         return response.status(400).json({
@@ -102,7 +104,7 @@ router.post(
       // Check conflict schedule with other class in the same semester
       const check_conflict = await pool.query(
         "SELECT * FROM check_schedule_conflict($1, $2, $3)",
-        [accountid, classID, semID]
+        [accountid, classCode, semID]
       );
 
       if (check_conflict.rowCount!==0 && check_conflict.rows[0].check_schedule_conflict!==null) {
@@ -114,7 +116,7 @@ router.post(
 
       // Check slots for the class
       const check_registered_num = await pool.query("SELECT * FROM get_registered_number($1, $2)", [classID, semID])
-      const get_class_capacity = await pool.query("SELECT * FROM get_total_number($1, $2)", [classID, semID])
+      const get_class_capacity = await pool.query("SELECT * FROM get_total_number($1, $2)", [classCode, semID])
 
       if (check_registered_num.rows[0].get_registered_number === get_class_capacity.rows[0].get_total_number){
         return response.status(400).json({
