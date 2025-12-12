@@ -48,21 +48,22 @@ router.post("/api/student/AISmartTimeTable", async (request, response) => {
   Student's schedule: ${studentSchedule}
   Classes schedule: ${classSchedules}
 
-  You are a scheduling assistant that recommends class IDs that do NOT conflict with a student's existing schedule.
+  You are a scheduling assistant that recommends classcode that do NOT conflict with a student's existing schedule.
 
   INPUTS (JSON):
-    - studentSchedule: an array of objects { schedule: "<weekday HH:MM-HH:MM; ...>", location: "<room>" }
-    - classes: an array of objects { clsid: "<id>", classcode: "<code>", schedule: "<weekday HH:MM-HH:MM; ...>", location: "<room>" }
+    - studentSchedule: an array of objects { schedule in the form of "<weekday HH:MM-HH:MM; ...>"}
+    - classes: an array of objects { classcode, schedule in the form of "<weekday HH:MM-HH:MM; ...>"}
 
   RULES (conflict summary):
-    1) Split schedules by ';' into segments "Weekday HH:MM-HH:MM".
-    2) Compare only segments on the same weekday (mon,tue,wed,...).
-    3) Treat intervals as half-open [start, end). They overlap iff NOT(endA <= startB OR endB <= startA).
-    5) Do NOT recommend classes with missing or invalid schedule.
-    6) If student already has any class of the same course, do not recommend other classes of that course.
-    8) If studentSchedule is empty, recommend all classes that have valid schedules (subject to rule 6).
+    1) Treat intervals as half-open [start, end). They overlap iff NOT(endA <= startB OR endB <= startA). This logic Must be checked for classes that are in the same day (Mon, Tue)
+    2) Do NOT recommend classes with missing or invalid schedule.
+    3) If student already has any class of the same course, do not recommend other classes of that course.
+    4) If Student's schedule is empty, RETURN AN ARRAY OF ALL CLASSES IN THAT COURSE
+    5) The class recommended are purely based on the given class in class schedule MUST NOT GENERATE ANY OTHER OUTSIDE CLASSES
+    6) RETURN AN EMPTY ARRAY IF NO SCHEDULE IS NON_CONFLICT
   OUTPUT:
-    - Strict JSON array of classid strings (e.g. ["classid1","classid2"]).  No extra text.
+    - The output MUST be an array of classcode of the classes you deemed suitable --- EXAMPLE OUPUT [ "ClassCodeA", "ClassCodeB"](IF YOU FOUND NOTHING can be recommended DO NOT USE THIS AS A WAY TO ANSWER)
+    - The ID should remain unchange  for example if the schedule is KOR 101-34: Sat 15:15-19:30 then the output must return KOR 101-34 as classcode
 `;
   } catch (error) {
     response.json({ msg: error.message });
