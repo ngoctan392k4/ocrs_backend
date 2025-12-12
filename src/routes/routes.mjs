@@ -10,6 +10,7 @@ import editClassRouter from '../admin/ClassManagement/EditClass.mjs'
 import viewRegisteredRouter from '../student/ClassRegistration/RegisteredClass.mjs'
 import EditAccountRouter from '../admin/AccountManagement/EditAccount.mjs'
 import OpenCourseRouter from '../admin/OpenCourse/OpenCourse.mjs'
+import DashboardRouter from '../admin/Dashboard/Dashboard.mjs'
 
 import ClassRegistrationRouter from '../student/registration.mjs'
 import StudySchedule from '../student/Schedule/StudySchedule.mjs';
@@ -41,6 +42,7 @@ router.use(editClassRouter);
 router.use(viewRegisteredRouter);
 router.use(EditAccountRouter);
 router.use(OpenCourseRouter);
+router.use(DashboardRouter);
 
 
 // Student
