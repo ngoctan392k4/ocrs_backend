@@ -27,6 +27,7 @@ import ClassGrade from '../instructor/ClassGrade.mjs'
 
 import recommendationController from '../student/AI/Recommendation/recommendationController.mjs'
 import chatbot from '../student/AI/Chatbot/chatbot.mjs'
+import SmartTimeTable from '../student/AI/SmartTimeTable/TimeTable.mjs'
 
 const router = Router();
 router.use(authRouter);
@@ -58,6 +59,7 @@ router.use(viewAvalabieClassRouter);
 router.use(detailTranscriptRouter);
 router.use(recommendationController);
 router.use(chatbot);
+router.use(SmartTimeTable);
 router.use(overallTransciptRouter);
 
 // Instructor
