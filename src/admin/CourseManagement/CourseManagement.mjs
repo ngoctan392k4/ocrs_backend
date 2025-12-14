@@ -113,16 +113,29 @@ router.delete("/api/admin/CourseManagement/:courseid", async (req, res) => {
   const { courseid } = req.params;
 
   try {
-    const result = await pool.query("CALL delete_course($1)", [courseid]);
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: "Course not found" });
-    }
-
-    return res.json({ message: "Course deleted successfully" });
+    await pool.query("CALL delete_course($1)", [courseid]);
+    return res.json({
+      message: "Course deleted successfully",
+      courseid: courseid
+    });
   } catch (error) {
-    console.error("DELETE ERROR:", error.message);
-    return res.status(500).send("Database Error");
+    console.error("DELETE COURSE ERROR:", error.message);
+    if (error.message.includes("không tồn tại")) {
+      return res.status(404).json({
+        message: "Course not found",
+        error: error.message
+      });
+    }
+    if (error.message.includes("Không thể xóa")) {
+      return res.status(400).json({
+        message: "Cannot delete course",
+        error: error.message
+      });
+    }
+    return res.status(500).json({
+      message: "Database error",
+      error: error.message
+    });
   }
 });
 
